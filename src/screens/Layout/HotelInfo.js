@@ -7,8 +7,9 @@ import {
   ScrollView,
   Pressable,
   Dimensions,
+  Modal,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import SwiperReservation from '../main/View/SwiperReservation';
 import {useNavigation} from '@react-navigation/native';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -17,11 +18,13 @@ import avatar from '../../assets/main/black.jpg';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Octicons from 'react-native-vector-icons/Octicons';
-import ContentHost from './infor/ContentHost';
+import MapView, {Marker} from 'react-native-maps';
+
 const screenWidth = Dimensions.get('window').width;
 
 const HotelInfo = ({premiumHome = true, rare = true, verified = true}) => {
   const navigation = useNavigation();
+  const [modalVisibleMap, setModalVisibleMap] = useState(false);
   return (
     <>
       <ScrollView style={styles.container}>
@@ -270,7 +273,7 @@ const HotelInfo = ({premiumHome = true, rare = true, verified = true}) => {
               </Text>
             </View>
           </View>
-          <View style={[styles.hotelTypeContainer, {paddingHorizontal: 20}]}>
+          <View style={[styles.hotelTypeContainer, {marginHorizontal: 20}]}>
             <Text style={styles.hotelTypeText}>Nơi bạn sẽ ngủ nghỉ</Text>
             <View
               style={[
@@ -289,21 +292,51 @@ const HotelInfo = ({premiumHome = true, rare = true, verified = true}) => {
               <Text style={styles.informationTotalMoneyText}>1 giường đôi</Text>
             </View>
           </View>
-          <View style={[styles.hotelTypeContainer, {paddingHorizontal: 20}]}>
+          <View style={[styles.hotelTypeContainer, {marginHorizontal: 20}]}>
             <Text style={styles.hotelTypeText}>
               Nơi này có những gì cho bạn
             </Text>
 
             <View style={styles.hostReviewContentInformationReview}>
-              <FontAwesome
-                name="cutlery"
-                size={20}
-                color="black"
-              />
+              <FontAwesome name="cutlery" size={20} color="black" />
               <Text style={styles.hostReviewContentInformationReviewText}>
                 Công việc của tôi: owner of Lucky Ranch company
               </Text>
             </View>
+          </View>
+          <View style={[styles.hotelTypeContainer, {marginHorizontal: 20}]}>
+            <Text style={styles.hotelTypeText}>Nơi bạn sẽ đến</Text>
+            <Pressable
+              style={{
+                borderRadius: 10,
+                width: '100%',
+                height: 200,
+                overflow: 'hidden',
+                alignSelf: 'center',
+                marginVertical: 20,
+              }}
+              onPress={() => setModalVisibleMap(true)}>
+              <MapView
+                style={{
+                  width: '100%',
+                  height: '100%',
+                }}
+                initialRegion={{
+                  latitude: 37.78825,
+                  longitude: -122.4324,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }}
+                // customMapStyle={mapStyle}
+              >
+                <Marker
+                  coordinate={{latitude: 37.78825, longitude: -122.4324}}
+                  title="Địa điểm bạn sẽ đến"
+                  description="Nhấn biểu tượng Google Maps để dẫn đường"
+                  
+                />
+              </MapView>
+            </Pressable>
           </View>
         </View>
       </ScrollView>
@@ -315,9 +348,48 @@ const HotelInfo = ({premiumHome = true, rare = true, verified = true}) => {
           <Text style={styles.informationTrip}>Ngày 20 - Ngày 25 tháng 8</Text>
         </View>
         <TouchableOpacity style={styles.buttonAddHotel}>
+          {/* onPress={() => navigation.navigate("")} */}
           <Text style={styles.buttonAddHotelText}>Đặt phòng</Text>
         </TouchableOpacity>
       </View>
+      <Modal
+        animationType="slide"
+        visible={modalVisibleMap}
+        onRequestClose={() => {
+          setModalVisibleMap(!modalVisibleMap);
+        }}>
+        <View
+          style={{
+            flex: 1,
+          }}>
+          <MapView
+            style={{
+              width: '100%',
+              height: '100%',
+            }}
+            initialRegion={{
+              latitude: 37.78825,
+              longitude: -122.4324,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+            // customMapStyle={mapStyle}
+          >
+            <Marker
+              coordinate={{latitude: 37.78825, longitude: -122.4324}}
+              title="Địa điểm bạn sẽ đến"
+              description="Nhấn biểu tượng Google Maps để dẫn đường"
+            />
+          </MapView>
+          <TouchableOpacity 
+            style={[styles.cardModal, styles.elevationModal]}
+            
+            onPress={() => setModalVisibleMap(false)}>
+            <MaterialIcons name="close" size={25} color="black" />
+          </TouchableOpacity>
+        </View>
+      </Modal>
+      
     </>
   );
 };
@@ -387,13 +459,12 @@ const styles = StyleSheet.create({
   hostReviewContentInformationReview: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 7,
+    paddingVertical: 10,
   },
   hostReviewContentInformationReviewText: {
     color: 'black',
-    fontSize: 14,
-    width: '80%',
-
+    fontSize: 16,
+    paddingHorizontal: 15,
   },
   hostReviewContent: {
     paddingVertical: 7,
@@ -475,6 +546,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 40,
   },
+  cardModal: {
+    position: 'absolute',
+    top: '3%',
+    left: '3%',
+    backgroundColor: 'white',
+
+    width: 45,
+    height: 45,
+
+    borderRadius: 10,
+  },
+  elevationModal: {
+    elevation: 10,
+    shadowColor: 'rgb(57, 51, 45)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   hotelSpecifiedContentWidget: {
     flexDirection: 'row',
     paddingVertical: 10,
@@ -491,7 +579,7 @@ const styles = StyleSheet.create({
   informationTotalMoneyText: {
     color: 'rgb(63, 63, 63)',
     fontSize: 12,
-    fontFamily: 'Poppins-Thin'
+    fontFamily: 'Poppins-Thin',
   },
   buttonAddHotelText: {
     color: 'white',
@@ -630,7 +718,33 @@ const styles = StyleSheet.create({
     color: 'black',
     fontWeight: '700',
     flexWrap: 'wrap',
-        fontFamily: 'Poppins-ExtraLight'
+    fontFamily: 'Poppins-ExtraLight',
+  },
+  centeredViewTicket: {
+    position: 'absolute',
+    backgroundColor: 'rgba(52, 52, 52, 0.8)',
+    alignSelf: 'center',
 
+    borderRadius: 10,
+    width: '100%',
+    height: '100%',
+  },
+  centeredViewTicketDeep: {
+    bottom: '40%',
+    position: 'absolute',
+    backgroundColor: 'white',
+    alignSelf: 'center',
+    width: '70%',
+    height: '30%',
+    borderRadius: 10,
+  },
+  modalView: {
+    paddingVertical: 15,
+    flexDirection: 'row',
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomColor: 'gray',
+    borderBottomWidth: 0.4,
   },
 });

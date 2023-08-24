@@ -8,6 +8,7 @@ import SignUpScreen from './src/auth/log/signUp/SignUpScreen';
 import {useAppDispatch, useAppSelector} from './app/hooks/hooks';
 import HotelInfo from './src/screens/Layout/HotelInfo';
 
+
 const AuthScreen = createNativeStackNavigator();
 
 export default function App() {
@@ -29,11 +30,13 @@ export default function App() {
                   animation: 'slide_from_right',
                 }}
               />
+              
             </>
           ) : (
             <>
               <AuthScreen.Screen name="Login" component={LoginScreen} />
               <AuthScreen.Screen name="SignUp" component={SignUpScreen} />
+              
             </>
           )}
         </AuthScreen.Navigator>
